@@ -1,0 +1,32 @@
+[
+  {
+  "name": "BMW 3 Series 320d Luxury Line",
+  "year": 2015,
+  "selling_price": 1000000,
+  "km_driven": 150000,
+  "fuel": "Diesel",
+  "seller_type": "Individual",
+  "transmission": "Manual",
+  "owner": "First Owner",
+  "mileage": "23.4 kmpl",
+  "engine": "1248 CC",
+  "max_power": "190 bhp",
+  "torque": "340Nm@ 2000rpm",
+  "seats": 5.0
+  },
+  {
+  "name": "Hyundai i20 Sportz Diesel",
+  "year": 2010,
+  "selling_price": 225000,
+  "km_driven": 127000,
+  "fuel": "Diesel",
+  "seller_type": "Individual",
+  "transmission": "Manual",
+  "owner": "First Owner",
+  "mileage": "23.0 kmpl",
+  "engine": "1396 CC",
+  "max_power": "90 bhp",
+  "torque": "22.4 kgm at 1750-2750rpm",
+  "seats": 5.0
+  }
+]
