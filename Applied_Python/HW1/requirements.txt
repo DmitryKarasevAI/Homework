@@ -1,0 +1,7 @@
+streamlit==1.41.1
+modin==0.32.0
+asyncio==3.4.3
+httpx==0.28.1
+matplotlib==3.10.0
+statsmodels==0.14.4
+aiohttp==3.11.10
