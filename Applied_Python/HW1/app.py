@@ -30,7 +30,49 @@ def analyze_data(df):
     df_city_season_aggs = pd.concat([temp_mean, temp_std, temp_min, temp_max], axis=1)
     df_city_season_aggs.columns = ('temp_mean', 'temp_std', 'temp_min', 'temp_max')
 
+    # Найдём аномалии в данных:
     df_aggs = df_city_season_aggs.reset_index()
+    for city in cities:
+        city_data = df[df['city'] == city]
+        for season in seasons:
+            mean = df_aggs[(df_aggs['city'] == city) & (df_aggs['season'] == season)]['temp_mean'].mean()
+            std = df_aggs[(df_aggs['city'] == city) & (df_aggs['season'] == season)]['temp_std'].mean()
+            city_data['is_anomaly'] = (city_data['temperature'] > mean + 2 * std) | (city_data['temperature'] < mean - 2 * std)
+
+            plt.scatter(city_data[(city_data['is_anomaly'] == False) & (city_data['season'] == season)]['timestamp'],
+                        city_data[(city_data['is_anomaly'] == False) & (city_data['season'] == season)]['temperature'],
+                        c='b')
+            plt.scatter(city_data[(city_data['is_anomaly'] == True) & (city_data['season'] == season)]['timestamp'],
+                        city_data[(city_data['is_anomaly'] == True) & (city_data['season'] == season)]['temperature'],
+                        c='r')
+            plt.title(f'City: {city}, Season: {season}')
+            plt.xlabel('Timestamp')
+            plt.ylabel('Temperature')
+            plt.savefig(str(city) + '_' + str(season) + ".png")
+            plt.close()
+
+    # Построим ACF и PACF для каждого города:
+    for city in cities:
+        city_data = df[df['city'] == city]
+
+        plt.figure(figsize=(12, 6))
+
+        # ACF
+        plt.subplot(2, 1, 1)
+        plot_acf(city_data['temperature'], lags=30, ax=plt.gca())
+        plt.title("Auto-Correlation Function (ACF)")
+
+        # PACF
+        plt.subplot(2, 1, 2)
+        plot_pacf(city_data['temperature'], lags=30, ax=plt.gca(), method='ywm')
+        plt.title("Partial Auto-Correlation Function (PACF)")
+
+        plt.tight_layout()
+        plt.savefig(str(city) + ".png")
+        plt.close()
+
+    # Графики показывают decay ACF и обрубление PACF примерно на 10 лаге (дне),
+    # соответственно, хорошей моделью для данных городов была бы AR(10)
     return df_ma, df_aggs
 
 
@@ -39,7 +81,6 @@ def analyze_data_parallel(df):
     cities = df['city'].unique()
     with multiprocessing.Pool(processes=4) as pool:
         pool.starmap(analyze_data, [(df[df['city'] == city], ) for city in cities])
-
 
 # Асинхронный API запрос
 async def get_weather(city_picked, city_coordinates, API_KEY):
